@@ -1,4 +1,6 @@
 FROM node:alpine
+RUN ls -al
+RUN ls -al ../
 WORKDIR /app
 COPY package.json ./
 RUN npm install
