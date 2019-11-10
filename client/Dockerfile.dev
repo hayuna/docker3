@@ -1,9 +1,10 @@
 FROM node:alpine
-RUN ls -al
-RUN ls -al ../
-WORKDIR /app
-COPY package.json ./
-RUN npm install
-COPY . .
-CMD ["npm", "run", "start"]
 
+WORKDIR /app
+
+COPY package.json .
+RUN npm install
+
+COPY . .
+
+CMD ["npm", "run", "start"]
