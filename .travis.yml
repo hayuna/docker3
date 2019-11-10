@@ -4,7 +4,7 @@ services:
   - docker
 
 before_install:
-  - docker build -t marekkowalonek/complex -f ./client/Dockerfile.dev .
+  - docker build -t marekkowalonek/complex -f ./client/Dockerfile.dev ./client
 script:
   - docker run -e CI=true marekkowalonek/complex npm test -- --coverage
 
