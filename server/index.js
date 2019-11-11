@@ -1,68 +1,31 @@
-const keys = require('./keys')
-
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const mongoose = require('mongoose')
+const axios = require('axios')
+const testRoute = require('./routes/test')
 
 const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 
-
-const { Pool } = require('pg')
-const pgClient = new Pool({
-    user: keys.pgUser,
-    host: keys.pgHost,
-    database: keys.pgDatabase,
-    password: keys.pgPassword,
-    port: keys.pgPort
-})
-pgClient.on('error', () => console.log('Lost PG Connection'))
-
-pgClient
-    .query('CREATE TABLE IF NOT EXISTS values (number INT)')
-    .catch(err => console.log(err))
-
-
-    const redis = require('redis')
-const redisClient = redis.createClient({
-    host: keys.redisHost,
-    port: keys.redisPort,
-    retry_strategy: () => 1000
-})
-const redisPublisher = redisClient.duplicate()
-
-
+mongoose.connect('mongodb://admin:admin123@ds245018.mlab.com:45018/featurechecker')
+    .then(() => console.log('DB connected'))
+    .catch(e => console.log(e))
 
 app.get('/', (req, res) => {
-    res.send('Hi')
+    res.send('test')
 })
 
-app.get('/values/all', async (req, res) => {
+app.use('/tests', testRoute)
 
-
-    res.send([1, 2, 3])
-})
-
-app.get('/values/current', async (req, res) => {
-    redisClient.hgetall('values', (err, values) => {
-        res.send(values)
-    })
-})
-
-app.post('/values', async (req, res) => {
-    const index = req.body.index
-
-    if(parseInt(index) > 40) {
-        return res.status(422).send('Index too high');
+app.get('/random', async (req, res) => {
+    try{
+        const { data } = await axios.get('https://jsonplaceholder.typicode.com/todos/1')
+        res.send(data.title);
+    } catch(e) {
+        console.error(e)
     }
-
-    redisClient.hset('values', index, 'Nothing yet!')
-    redisPublisher.publish('insert', index)
-    pgClient.query('INSERT INTO values(number) VALUES($1)', [index])
-
-    res.send({ working: true })
 })
 
 app.listen(5000, err => {
