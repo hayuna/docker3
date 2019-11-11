@@ -15,5 +15,8 @@ jobs:
           password: ${{ secrets.HAYUNA_PASSWORD }}
           port: ${{ secrets.HAYUNA_PORT }}
           script: |
+            mkdir -p /home/github
+            cd /home/github
             whoami
+            pwd
             ls -al
