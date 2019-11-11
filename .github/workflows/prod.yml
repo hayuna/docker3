@@ -17,4 +17,4 @@ jobs:
           script: |
             cd /home/github
             git pull origin master
-            docker-compose up --build
+            docker-compose up --build -d
